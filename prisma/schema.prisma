@@ -1,0 +1,48 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model User {
+  id        String         @id @default(cuid())
+  email     String         @unique
+  name      String
+  password  String
+  decks     Deck[]
+  progress  CardProgress[]
+  createdAt DateTime       @default(now())
+}
+
+model Deck {
+  id        String   @id @default(cuid())
+  name      String
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  cards     Card[]
+  createdAt DateTime @default(now())
+}
+
+model Card {
+  id       String         @id @default(cuid())
+  deckId   String
+  deck     Deck           @relation(fields: [deckId], references: [id], onDelete: Cascade)
+  question String
+  answer   String
+  progress CardProgress[]
+}
+
+model CardProgress {
+  id        String   @id @default(cuid())
+  userId    String
+  cardId    String
+  status    String   // KNOWN | HARD | NOT_SURE
+  user      User     @relation(fields: [userId], references: [id])
+  card      Card     @relation(fields: [cardId], references: [id], onDelete: Cascade)
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, cardId])
+}
