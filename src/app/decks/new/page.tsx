@@ -52,7 +52,7 @@ export default function NewDeckPage() {
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">CSV file</label>
             <p className="text-xs text-gray-400 mb-2">
-              Required columns: <code>question</code>, <code>answer</code> (with header row)
+              Columns: <code>question</code>/<code>answer</code> or <code>front</code>/<code>back</code> (header row required)
             </p>
             <label className="flex items-center justify-center w-full h-32 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-indigo-400 transition">
               <div className="text-center">

@@ -53,13 +53,21 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "CSV has no valid rows" }, { status: 400 });
   }
 
-  const deck = await prisma.deck.create({
-    data: {
-      name,
-      userId: session.user.id,
-      cards: { create: cards },
-    },
-  });
+  let deck;
+  try {
+    deck = await prisma.deck.create({
+      data: {
+        name,
+        userId: session.user.id,
+        cards: { create: cards },
+      },
+    });
+  } catch {
+    return NextResponse.json(
+      { error: "Failed to create deck. Your session may be invalid — try signing out and back in." },
+      { status: 500 }
+    );
+  }
 
   return NextResponse.json({ id: deck.id });
 }
