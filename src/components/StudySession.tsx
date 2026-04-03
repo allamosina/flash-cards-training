@@ -47,6 +47,7 @@ export default function StudySession({ deckId, deckName, cards: initialCards }: 
   const [index, setIndex] = useState(0);
   const [summary, setSummary] = useState<Summary | null>(null);
   const [counts, setCounts] = useState({ known: 0, hard: 0, notSure: 0 });
+  const [history, setHistory] = useState<("KNOWN" | "HARD" | "NOT_SURE")[]>([]);
 
   async function handleMark(status: "KNOWN" | "HARD" | "NOT_SURE") {
     const card = cards[index];
@@ -62,12 +63,26 @@ export default function StudySession({ deckId, deckName, cards: initialCards }: 
     else if (status === "HARD") next.hard++;
     else next.notSure++;
 
+    setHistory((h) => [...h, status]);
+
     if (index + 1 >= cards.length) {
       setSummary(next);
     } else {
       setCounts(next);
       setIndex((i) => i + 1);
     }
+  }
+
+  function handleBack() {
+    if (index === 0) return;
+    const prev = history[history.length - 1];
+    const next = { ...counts };
+    if (prev === "KNOWN") next.known--;
+    else if (prev === "HARD") next.hard--;
+    else next.notSure--;
+    setHistory((h) => h.slice(0, -1));
+    setCounts(next);
+    setIndex((i) => i - 1);
   }
 
   if (cards.length === 0) {
@@ -136,6 +151,7 @@ export default function StudySession({ deckId, deckName, cards: initialCards }: 
       index={index}
       total={cards.length}
       onMark={handleMark}
+      onBack={index > 0 ? handleBack : undefined}
     />
   );
 }

@@ -8,9 +8,10 @@ interface Props {
   index: number;
   total: number;
   onMark: (status: "KNOWN" | "HARD" | "NOT_SURE") => void;
+  onBack?: () => void;
 }
 
-export default function FlashCard({ question, answer, index, total, onMark }: Props) {
+export default function FlashCard({ question, answer, index, total, onMark, onBack }: Props) {
   const [flipped, setFlipped] = useState(false);
 
   function handleMark(status: "KNOWN" | "HARD" | "NOT_SURE") {
@@ -18,11 +19,24 @@ export default function FlashCard({ question, answer, index, total, onMark }: Pr
     onMark(status);
   }
 
+  function handleBack() {
+    setFlipped(false);
+    onBack?.();
+  }
+
   return (
     <div className="flex flex-col items-center gap-6 w-full max-w-xl mx-auto">
-      <p className="text-sm text-gray-400">
-        Card {index + 1} of {total}
-      </p>
+      <div className="flex items-center justify-between w-full">
+        <button
+          onClick={handleBack}
+          disabled={!onBack}
+          className="text-sm text-gray-400 hover:text-gray-600 disabled:opacity-0 transition flex items-center gap-1"
+        >
+          ← Back
+        </button>
+        <p className="text-sm text-gray-400">Card {index + 1} of {total}</p>
+        <div className="w-12" />
+      </div>
 
       {/* Progress bar */}
       <div className="w-full h-1.5 bg-gray-200 rounded-full overflow-hidden">
