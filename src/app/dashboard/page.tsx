@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 import SignOutButton from "@/components/SignOutButton";
+import TabBar from "@/components/TabBar";
 
 export default async function DashboardPage() {
   const session = await auth();
@@ -27,8 +28,8 @@ export default async function DashboardPage() {
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-8">
-      <header className="flex items-center justify-between mb-8">
-        <h1 className="text-2xl font-bold text-gray-800">My Decks</h1>
+      <header className="flex items-center justify-between mb-6">
+        <h1 className="text-2xl font-bold text-gray-800">Flash Cards</h1>
         <div className="flex gap-3 items-center">
           <span className="text-sm text-gray-500">Hi, {session.user.name}</span>
           <SignOutButton />
@@ -40,6 +41,8 @@ export default async function DashboardPage() {
           </Link>
         </div>
       </header>
+
+      <TabBar />
 
       {deckStats.length === 0 ? (
         <div className="text-center py-20 text-gray-400">

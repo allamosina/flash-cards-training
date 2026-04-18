@@ -121,7 +121,94 @@ Full-stack flash card memory app with user auth, deck management (CSV import), a
 
 ---
 
-## 5. Automated Test Coverage (Playwright E2E)
+## 5. Words Feature
+
+### 5.1 Tab Navigation
+| # | Test | Expected |
+|---|------|----------|
+| W-N1 | Visit `/dashboard` | "Decks" tab active (indigo underline) |
+| W-N2 | Click "Words" tab | Navigates to `/words`, "Words" tab active |
+| W-N3 | Click "Decks" tab from Words | Returns to `/dashboard` |
+
+### 5.2 Empty State
+| # | Test | Expected |
+|---|------|----------|
+| W-E1 | `/words` with no words | "No words yet" + link to add words |
+| W-E2 | No filter panel shown | Correct — nothing to filter |
+
+### 5.3 Add Word (single)
+| # | Test | Expected |
+|---|------|----------|
+| W-A1 | Fill form: Czech="pes\|psi", Russian="собака\|псы", Type=Noun, Gender=Masculine, Topic=animals | "Word added!" + form resets |
+| W-A2 | Add verb: Czech="jít", Russian="идти", Type=Verb, Gender=N/A | Success |
+| W-A3 | Add phrase without topic | Success |
+| W-A4 | Submit with empty Czech | Browser validation prevents submit |
+| W-A5 | Navigate to `/words` | All words visible; "pes\|psi" shows as "pes · psi" in table |
+| W-A6 | Gender column for verb | Shows "—" |
+| W-A7 | All words show level "new" (gray badge) | Correct |
+
+### 5.4 CSV Import
+| # | Test | Expected |
+|---|------|----------|
+| W-C1 | Hover "Format?" | Tooltip with format example visible |
+| W-C2 | Tooltip shows pipe example | "Use \| for multiple meanings" |
+| W-C3 | Upload valid CSV | Redirected to `/words?imported=N` |
+| W-C4 | Words from CSV appear in table | Correct |
+| W-C5 | Upload CSV missing required columns | Error shown |
+| W-C6 | Upload empty CSV | "No valid rows in CSV" error |
+
+Sample word CSV:
+```csv
+czech,russian,gender,type,topic
+kočka,кошка,feminine,noun,animals
+studovat,учить,,verb,education
+prosím|děkuji,пожалуйста|спасибо,,phrase,politeness
+```
+
+### 5.5 Filter UI
+| # | Test | Expected |
+|---|------|----------|
+| W-F1 | Default levels | New, Fail, Hard, Easy active; Know inactive |
+| W-F2 | Start button count | Matches words with active level filters |
+| W-F3 | Toggle "Know" on | Count increases to include known words |
+| W-F4 | Toggle type "Noun" | Only nouns counted |
+| W-F5 | Toggle same type again | All types included again |
+| W-F6 | Topic tags appear | Topics from words shown |
+| W-F7 | 0 words match | Button disabled |
+| W-F8 | Direction default | CZ → RU selected |
+
+### 5.6 Study Session
+| # | Test | Expected |
+|---|------|----------|
+| W-S1 | Start with CZ→RU | Card front shows Czech label |
+| W-S2 | Click card | Flips to Russian translation |
+| W-S3 | Back shows metadata | Type, gender (if not n/a), topic badges |
+| W-S4 | "pes\|psi" shows as "pes · psi" | Pipe replaced |
+| W-S5 | 4 buttons after flip | Fail (red), Hard (amber), Easy (blue), Know (green) |
+| W-S6 | Click "Know" | Next card shown, progress bar advances |
+| W-S7 | Back button on card 2+ | Returns to previous card |
+| W-S8 | Mark all cards | Summary screen with fail/hard/easy/know counts |
+| W-S9 | "Back to Words" | Returns to `/words` |
+| W-S10 | Level badge updated | Word marked "know" shows green badge |
+| W-S11 | RU→CZ direction | Front shows Russian, back shows Czech |
+| W-S12 | No matching words | "No words match your filters" message |
+
+### 5.7 Delete Words
+| # | Test | Expected |
+|---|------|----------|
+| W-D1 | Click "Delete" | Word removed from table immediately |
+| W-D2 | Filter count updates | Start button count decreases |
+
+### 5.8 Regression — Deck Functionality
+| # | Test | Expected |
+|---|------|----------|
+| W-R1 | Dashboard deck list | Unchanged |
+| W-R2 | Create new deck | Works as before |
+| W-R3 | Study deck | Hard / Not Sure / Known buttons (unchanged) |
+
+---
+
+## 6. Automated Test Coverage (Playwright E2E)
 - Happy path: register → create deck → study all cards → verify Known exclusion
 - Auth guard: unauthenticated access to protected routes
 - API smoke tests: register, login, deck CRUD, progress update

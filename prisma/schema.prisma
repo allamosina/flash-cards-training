@@ -8,13 +8,15 @@ datasource db {
 }
 
 model User {
-  id        String         @id @default(cuid())
-  email     String         @unique
-  name      String
-  password  String
-  decks     Deck[]
-  progress  CardProgress[]
-  createdAt DateTime       @default(now())
+  id           String         @id @default(cuid())
+  email        String         @unique
+  name         String
+  password     String
+  decks        Deck[]
+  progress     CardProgress[]
+  words        Word[]
+  wordProgress WordProgress[]
+  createdAt    DateTime       @default(now())
 }
 
 model Deck {
@@ -45,4 +47,29 @@ model CardProgress {
   updatedAt DateTime @updatedAt
 
   @@unique([userId, cardId])
+}
+
+model Word {
+  id        String         @id @default(cuid())
+  userId    String
+  user      User           @relation(fields: [userId], references: [id])
+  czech     String
+  russian   String
+  gender    String?        // masculine | feminine | neuter | n/a
+  wordType  String         // noun | verb | phrase | adjective | adverb
+  topic     String?
+  createdAt DateTime       @default(now())
+  progress  WordProgress[]
+}
+
+model WordProgress {
+  id        String   @id @default(cuid())
+  userId    String
+  wordId    String
+  level     String   @default("new") // new | fail | hard | easy | know
+  user      User     @relation(fields: [userId], references: [id])
+  word      Word     @relation(fields: [wordId], references: [id], onDelete: Cascade)
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, wordId])
 }
